@@ -15,62 +15,42 @@ const App = () => {
     "purple",
   ];
 
+  function bodyClick(e) {
+    const { clientX, clientY } = e;
+   
 
-//   function bodyClick(e){
-//     const{clientX,clientY}=e
-//     if(e.target.tagName==="Button")return
-//     const randomColor = colors[Math.floor(Math.random() * colors.length)];
-//     console.log(randomColor)
-//     setDot((prevDot)=>[
-//       ...prevDot,
-// {x:clientX,y:clientY,colors:randomColor},
-//     ])
-//   }
+    if (e.target.tagName === "BUTTON") return;
 
-
- 
-
-function bodyClick(e){
-if(e.target.tagName==="BUTTON")
-  return
-}
-
-const dotObj={
-    color = colors[Math.floor(Math.random() * colors.length)];
-    id:Date.now(),
-    x:e.clientX,
-    y:e.clientY
-
-}
-setDot([...Dot,dotObj])
-console.log(dotObj)
-
-
-// function handleUndo(e) {
-//   e.stopPropagation()
-//   if(Dot.length===0)return
-//   const newDots =[...Dot]
-//   const removedDot =Dot.pop()
-//   setDot(newDots)
-//   // console.log(newDots)
-//   setRedo((prevRedo)=>[...prevRedo,removedDot])
-// }
-
-
-
-
-
-  // function handleRedo(e) {
-  //   e.stopPropagation();
-  //   if (Redo.length === 0) return;
-  //   const newRedo = [...Redo];
-  //   const restoredDot = newRedo.pop();
-  //   setDot((prevDot) => [...prevDot, restoredDot]);
-  //   setRedo(newRedo);
-  // }
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    setDot((prevDot) => [
+      ...prevDot,
+      { x: clientX, y: clientY, color: randomColor },
+    ]);
+  }
 
  
+  function handleUndo(e) {
+    e.stopPropagation(); 
+    if (Dot.length === 0) return;
+    const newDots = [...Dot];
+    const removedDot = newDots.pop();
+    setDot(newDots);
+    setRedo((prevRedo) => [...prevRedo, removedDot]);
+  }
+
+  
+  function handleRedo(e) {
+    e.stopPropagation();
+    if (Redo.length === 0) return;
+    const newRedo = [...Redo];
+    const restoredDot = newRedo.pop();
+    setDot((prevDot) => [...prevDot, restoredDot]);
+    setRedo(newRedo);
+  }
+
+
   function handleReset(e) {
+    e.stopPropagation();
     setDot([]);
     setRedo([]);
   }
@@ -78,32 +58,47 @@ console.log(dotObj)
   return (
     <div
       onClick={bodyClick}
-      className="box w-full h-screen bg-amber-100 relative overflow-hidden"
+      className="box w-full h-screen relative overflow-hidden"
     >
-   
+     
       <div className="flex gap-2.5 absolute top-4 left-4 z-10">
         <button
-          onClick={handleReset}
-          className="reset border bg-black text-amber-50 px-3 py-1.5 rounded"
+          onClick={handleReset} disabled={Dot.length===0}
+          className="reset border-2 px-5 py-0.5"
         >
           Reset
         </button>
         <button
           onClick={handleUndo}
-          className="undo border bg-black text-amber-50 px-3 py-1.5 rounded"
-        >
+          className="undo border-2 px-5 py-0.5"
+        disabled={Dot.length===0} bg-black>
           Undo
         </button>
         <button
-          // onClick={handleRedo}
-          className="redo border bg-black text-amber-50 px-3 py-1.5 rounded"
+          onClick={handleRedo}
+          className="redo border-2 px-5 py-0.5"
         >
           Redo
         </button>
       </div>
 
+     
+      {Dot.map((dot, index) => (
+        <div
+          key={index}
+          className="absolute rounded-full"
+          style={{
+            top: dot.y - 10,
+            left: dot.x - 10,
+            width: "20px",
+            height: "20px",
+            backgroundColor: dot.color,
+          }}
+        ></div>
+      ))}
     </div>
   );
 };
 
 export default App;
+  
